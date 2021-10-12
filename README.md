@@ -1,4 +1,4 @@
-# Cpp-for-Industrial-Applications
+# Cpp-for-Industrial-Applications by Synopsys
 
 <p align="center">
 <img src="figures/initial_flyer.jpg"  width="800" />
