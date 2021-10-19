@@ -44,4 +44,4 @@ Run following commands in the Linux Shell opened in the same directory as the `m
 
 ### Method 2
 
-Visual Studio with the add-on ***Desktop development with C++ ***
+Visual Studio with the add-on ***Desktop development with C++***
