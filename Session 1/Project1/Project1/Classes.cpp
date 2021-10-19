@@ -32,6 +32,7 @@ public:
     }
 };
 
+/*
 int main () {
     Shape* shape; // Pointer object of type shape
     Rectangle rec (10, 7); // Rectange object
@@ -42,3 +43,4 @@ int main () {
     cout << shape->area () << '\n'; // call triangle area using this pointer
     return 0;
 }
+*/
