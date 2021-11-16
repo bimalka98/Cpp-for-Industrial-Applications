@@ -10,3 +10,8 @@
 * Function templates
 * Class templates
 * Template specialization
+
+|Function overloading	|Function Template|
+|:----|:----|
+|This is used when multiple functions do similar operations.|	This is used when functions do identical operations.|
+|Function overloading can take varying numbers of arguments.|	Templates cannot take varying numbers of arguments.|

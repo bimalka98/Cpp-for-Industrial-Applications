@@ -1,6 +1,5 @@
-# Multi level build systems
+# Software Design
 
-- Linux Scripting
-- C++ building components
-- Makefile system
-- Introduction to CI/CD
+Frequently used design patterns
+- Singleton
+- Factory

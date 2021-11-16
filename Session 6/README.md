@@ -1,5 +1,6 @@
-# Applications of Data Structures and Algorithms
+# Multi level build systems
 
-- Selecting the most suitable Data Structures for a given application
-- Usage of Data Structures and Algorithms in the EDA industry
-- Launch of hackathon
+- Linux Scripting
+- C++ building components
+- Makefile system
+- Introduction to CI/CD
