@@ -1,6 +1,6 @@
-# Cpp-for-Industrial-Applications by Synopsys
+# "C++ Concepts for Industrial Applications" by Synopsys
 
-***Synopsys is conducting a series of virtual sessions on following C++ Concepts for Industrial Applications followed by a hackathon. Certificates will be awarded for the successful completion of the course and winners of the hackathon will be rewarded with attractive prizes.***
+## *Concepts covered in the sessions*
   
 - OOP concepts
 - Pointers and References
@@ -9,6 +9,8 @@
 - Software Design
 - Multi-level build systems
 - Applications of Data Structures and Algorithms
+
+---
 
 ## *Editor and Compiler configuration*
 
