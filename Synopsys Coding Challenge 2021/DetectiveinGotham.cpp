@@ -29,33 +29,30 @@ If there are multiple ways of opening all the rooms,
 choose the "lexicographically smallest" way. i.e. make Ri small as possible. 
 In above example, both 2, 1, 4, 3 and 2, 4, 3, 1 are will help to open all the doors. But print 2, 1, 4, 3 as the answer.
 */
-
-vector<int> backtrack(vector<int>& path, vector<int>& keys_at_hand, map<int, int>& key_types, vector<vector<int>> rooms, int room, vector<bool>& visited, int N) {    
-    if (path.size() == N) {
+vector<int> visitroom(vector<int>& path, vector<int>& keys_at_hand, map<int, int>& key_types, vector<vector<int>> rooms, int room_to_visit, vector<bool>& visited, int N) {    
+    // check if all elements in vector "visited" are true
+    if (find(visited.begin(), visited.end(), false) == visited.end()) {
         return path;
     }
-
-    vector<int> keys_inside = rooms[room];
-
     // if the room can not be opened, return empty vector
-    if (!(find(keys_at_hand.begin(), keys_at_hand.end(), key_types[room]) != keys_at_hand.end())) return vector<int>();
-    // if the room can be opeened, visit the room
+    if (!(find(keys_at_hand.begin(), keys_at_hand.end(), key_types[room_to_visit]) != keys_at_hand.end())) return vector<int>();
+    
+    // if we have the required key type to open the room visit the room
     else {
-        visited[room] = true; // mark as visited
-        path.push_back(room); // add the room to the path
+        visited[room_to_visit] = true; // mark as visited
+        path.push_back(room_to_visit); // add the room to the path
         // remove key from keys_at_hand
-        keys_at_hand.erase(find(keys_at_hand.begin(), keys_at_hand.end(), key_types[room]));
+        keys_at_hand.erase(find(keys_at_hand.begin(), keys_at_hand.end(), key_types[room_to_visit]));
         // add keys_inside to keys_at_hand
+        vector<int> keys_inside = rooms[room_to_visit];
         keys_at_hand.insert(keys_at_hand.end(), keys_inside.begin(), keys_inside.end());
-        // sort keys_at_hand
-        sort(keys_at_hand.begin(), keys_at_hand.end());
-        // recursively call backtrack
+        // check whethter we can visit any other room
         for(int i=0; i<N; i++) {
             if (visited[i]) continue;
             else {
                 path.push_back(i); // add newly visited room to the path
                 // do the same for newly visited room
-                vector<int> temp = backtrack(path, keys_at_hand, key_types, rooms, i, visited, N);
+                vector<int> temp = visitroom(path, keys_at_hand, key_types, rooms, i, visited, N);
                 if (temp.size() > 0) {
                     path.insert(path.end(), temp.begin(), temp.end());
                     return path;
@@ -69,14 +66,12 @@ vector<int> backtrack(vector<int>& path, vector<int>& keys_at_hand, map<int, int
     }
     return path;
 }
-
-
-
 int main(){
 
     int T;
     cin >> T;
-    while(T--){
+    for (int t=1; t<=T; t++) {
+        // read input for each test case
         int N, K;
         cin >> K >> N;
         vector<int> keys(K); // type of keys that we start with
@@ -94,26 +89,35 @@ int main(){
                 rooms[i].push_back(key); // type of key inside the chest
             }
         }
-        vector<int> path;
-        vector<bool> visited(N, false);
-        bool all_rooms_visited = false;
-        for(int start=0;start<N;start++){ // specify the room to start the investigation
-            vector<int> keys_at_hand = keys;    
-            // fucntion call to get the possible path to visit all the rooms
-            vector<int> visited_path = backtrack(path, keys_at_hand, key_types, rooms, start, visited, N);
-            if(visited_path.size() == N){
-                all_rooms_visited = true;
+        // find which room we can visit first such that we will be able to visit all the rooms using the keys inside the chest of that room
+        vector<int> chosen_path;
+        bool all_visited = false;
+        for(int i=0;i<N;i++){
+            vector<bool> visited(N, false);
+            vector<int> path;
+            vector<int> keys_at_hand = keys;
+            vector<int> temp = visitroom(path, keys_at_hand, key_types, rooms, i, visited, N);
+            // for(int x: temp) cout << x << " ";
+            // cout << endl;
+            if((int)path.size()>N){
+                chosen_path = path;
+                all_visited = true;
                 break;
             }
         }
-        if(all_rooms_visited){
-            cout << "Case #" << T+1 << ": ";
-            for(int i=0;i<path.size();i++) cout << path[i] << " ";
+        
+        if(all_visited){
+            cout << "Case #" << t << ": ";
+            int i = 0;
+            while(i <= 2*N -2){
+                cout << (chosen_path[i]+1) << " ";
+                i+=2;
+            }
             cout << endl;
         }
-        else cout << "Case #" << T+1 << ": IMPOSSIBLE" << endl;
-
-        
+        else{
+            cout << "Case #" << t << ": IMPOSSIBLE" << endl;
+        }        
     }
     return 0;
 }
