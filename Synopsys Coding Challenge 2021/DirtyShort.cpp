@@ -101,7 +101,7 @@ int main(){
         for(int i=1;i<=I;i++){
             for(int j=1;j<=I;j++){
                 if(i!=j){
-                    MyData data = get_data(i,j,adj, vector<int>{-1}); // consier all the nodes at fisrt level to find connections.
+                    MyData data = get_data(i,j,adj, vector<int>{-1}); // consider all the nodes at fisrt to find connections.
                     // debuggin
                     // cout << "source: " << i << " dest: " << j << " Distance1: " << data.dist << endl;
                     // cout << "Path: ";
