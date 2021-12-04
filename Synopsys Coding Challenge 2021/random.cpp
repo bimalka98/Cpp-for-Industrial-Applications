@@ -23,6 +23,5 @@ int main(){
     // cout << t << endl;
     pair<int, int> p = {0,0};
     pair<int, int> p1 = {1,0};
-    pair<int, int> p2 = p1 -p;
-    cout << p2.first << " " << p2.second << endl;
+    cout << p==p1 << endl;
 }

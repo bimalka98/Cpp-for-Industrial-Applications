@@ -7,8 +7,64 @@ struct Node{
 };
 
 void getShortestPath(pair<int, int> src, pair<int, int> dest, vector<vector<vector<Node>>> &graph){
-    //dijkstra's algorithm to find the shortest path from src to dest using priority queue
-
+    bool reachable = false;
+    // use dijkstra's algorithm to find the shortest path
+    // use Node.delay.first as the metric to find the shortest path
+    priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> pq;
+    pq.push({0, src}); // distance, node
+    vector<vector<bool>> all_used(graph.size(), vector<bool>(4, false));
+    vector<vector<int> > dist(graph.size(), vector<int>(4, INT_MAX));
+    dist[src.first][src.second] = 0;
+    vector<vector<pair<int, int>>> prev(graph.size(), vector<pair<int, int>>(4, {-1, -1}));
+    while(!pq.empty()){
+        pair<int, pair<int, int>> curr = pq.top(); // distance, node(x, y)
+        pq.pop();
+        if(all_used[curr.second.first][curr.second.second]){
+            continue;
+        }
+        all_used[curr.second.first][curr.second.second] = true;
+        if(curr.second.first == dest.first && curr.second.second == dest.second){
+             reachable = true;
+             break;
+        }
+        for(auto &nextNode: graph[curr.second.first][curr.second.second]){
+            if(!all_used[nextNode.node.first][nextNode.node.second] && nextNode.delay.second != 0){
+                // cout << "Next node: " << nextNode.node.first << " " << nextNode.node.second << endl;
+                int newDist = curr.first + nextNode.delay.first;
+                if(newDist < dist[nextNode.node.first][nextNode.node.second]){
+                    dist[nextNode.node.first][nextNode.node.second] = newDist;
+                    prev[nextNode.node.first][nextNode.node.second] = curr.second;
+                    pq.push({-newDist, nextNode.node});
+                    // cout << "Prev # Traces: " << nextNode.delay.second << endl;
+                    nextNode.delay.second--;
+                    // cout << "Remaining #Traces: " << nextNode.delay.second << endl;
+                }
+            }
+        }
+    }
+    // print the path
+    if(reachable){
+        int curr_x = dest.first;
+        int curr_y = dest.second;
+        stack<pair<int, int>> path;
+        // path.push({curr_x, curr_y});
+        while(curr_x != src.first || curr_y != src.second){
+            // cout << "(" << curr_x << "," << curr_y << ") ";
+            path.push({curr_x, curr_y});
+            curr_x = prev[curr_x][curr_y].first;
+            curr_y = prev[curr_x][curr_y].second;
+        }
+        path.push({curr_x, curr_y});
+        while(path.size() != 0){
+            pair<int, int> curr = path.top();
+            path.pop();
+            cout << curr.second << "," << curr.first << " ";
+        }
+        // cout << "(" << curr_x << "," << curr_y << ") ";
+        // break;
+    }else{
+        cout << "NC" << endl;
+    }
 }
 
 int main(){
@@ -72,13 +128,13 @@ int main(){
                     traces = Nvt;
                     // cout << "delay: " << delay << endl;
                 }
-                
-                temp_node.delay = make_pair(-delay, traces);
+                // cout << "Delaay: " << delay << "Traces: " << traces << endl;
+                temp_node.delay = make_pair(delay, traces);
                 graph[n][m].push_back(temp_node);
             }
         }
     }
-    cout << "graph generated" << endl;
+    // cout << "graph generated" << endl;
 
     // print the graph
     // for(int m=0; m<M; m++){
@@ -101,6 +157,7 @@ int main(){
         pair<int, int> dest = {stoi(end.substr(0, end.find(','))), stoi(end.substr(end.find(',') + 1))};
         // cout << "Start: " << start_point.first << "," << start_point.second << endl;
         // cout << "End: " << end_point.first << "," << end_point.second << endl;
+        getShortestPath(src, dest, graph);
     }
 }
 
