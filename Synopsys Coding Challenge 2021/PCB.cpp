@@ -6,7 +6,7 @@ struct Node{
     pair<int, int> delay; // in the form (-delay, traces)
 };
 
-void getShortestPath(pair<int, int> src, pair<int, int> dest, vector<vector<Node>> &graph){
+void getShortestPath(pair<int, int> src, pair<int, int> dest, vector<vector<vector<Node>>> &graph){
     //dijkstra's algorithm to find the shortest path from src to dest using priority queue
 
 }
@@ -33,11 +33,12 @@ int main(){
         }
     }
     // generate a graph of size M x N nodes: each node is a pair of (x, y) coordinates
-    vector<vector<Node>> graph(M, vector<Node>(N));
-    for(int m=0; m<M; m++){
+    vector<vector<vector<Node>>> graph(M, vector<vector<Node>>(N, vector<Node>()));
+    for(int m=0; m<M; m++){ 
         for(int n=0; n<N; n++){// itertae over x direction first
             // parent node is the node itself
             pair<int, int> parent = make_pair(n, m); // in the form of (x, y)
+            // cout << "parent: " << parent.first << " " << parent.second << endl;
             // set of neighbour nodes
             set<pair<int, int>> neighbours;
             neighbours.insert(parent);
@@ -49,35 +50,48 @@ int main(){
             neighbours.erase(parent);
             // set the delay of each neighbour node to be the weight of the edge between the parent and the neighbour
             for(auto neighbour : neighbours){
+                // cout << "neighbour: " << neighbour.first << " " << neighbour.second << endl;
                 Node temp_node;
                 temp_node.node = neighbour;
                 int delay;
                 int traces;
                 if(neighbour.second == m){ // neighbour is in the same row
-                    delay = ht[M-1 - neighbour.second][neighbour.first -1];
+                    // delay = ht[M-1 - neighbour.second][neighbour.first -1];
+                    // delay = ht[m][neighbour.first - 1];
+                    // cout << "Same row: ";
+                    delay = ht[M-1 -m][abs(max(parent.first, neighbour.first) -1)];
                     traces = Nht;
+                    // cout << "delay: " << delay << endl;
+                    
                 }
                 else{ // neighbour is in the same column
-                    delay = vt[M-1 - neighbour.second][neighbour.first];
+                    // delay = vt[M-1 - neighbour.second][neighbour.first];
+                    // delay = vt[m][neighbour.first];
+                    // cout << "Same column: ";
+                    delay = vt[abs(M-1-max(neighbour.second, parent.second))][neighbour.first];
                     traces = Nvt;
+                    // cout << "delay: " << delay << endl;
                 }
+                
                 temp_node.delay = make_pair(-delay, traces);
                 graph[n][m].push_back(temp_node);
             }
         }
     }
+    cout << "graph generated" << endl;
+
     // print the graph
-    for(int m=0; m<M; m++){
-        for(int n=0; n<N; n++){
-            cout << "Node: (" << n << ", " << m << ") " << endl;
-            cout << "Neighbours: " << endl;
-            for(auto neighbour : graph[n][m]){
-                cout << "(" << neighbour.node.first << ", " << neighbour.node.second << ") ";
-                cout << "Delay: " << neighbour.delay.first << " " << "Traces: " << neighbour.delay.second << endl;
-            }
-        }
-        cout << endl;
-    }
+    // for(int m=0; m<M; m++){
+    //     for(int n=0; n<N; n++){
+    //         cout << "Node: (" << n << ", " << m << ") " << endl;
+    //         cout << "Neighbours: " << endl;
+    //         for(auto neighbour : graph[n][m]){
+    //             cout << "(" << neighbour.node.first << ", " << neighbour.node.second << ") ";
+    //             cout << "Delay: " << neighbour.delay.first << " " << "Traces: " << neighbour.delay.second << endl;
+    //         }
+    //     }
+    //     cout << endl;
+    // }
 
     // test cases starting from here onward
     string start, end; // in the form: x1,y1 x2,y2

@@ -15,9 +15,14 @@ int main(){
     // if(find(mat.begin(), mat.end(), {1,2,3}) != mat.end()){
     //     cout << "found" << endl;
     // }
-    int t =0;
-    for(int i=1; i<=8; i++){
-        t+=i*i;
-    }
-    cout << t << endl;
+    // int t =0;
+
+    // for(int i=1; i<=8; i++){
+    //     t+=i*i;
+    // }
+    // cout << t << endl;
+    pair<int, int> p = {0,0};
+    pair<int, int> p1 = {1,0};
+    pair<int, int> p2 = p1 -p;
+    cout << p2.first << " " << p2.second << endl;
 }
