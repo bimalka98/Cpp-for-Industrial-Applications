@@ -2,72 +2,85 @@
 using namespace std;
 
 struct Node{
-    pair<int, int> node; // in the form of (x, y)
-    pair<int, int> delay; // in the form (-delay, traces)
+    int node;
+    int delay; 
+    int traces;
 };
 
-
-void getShortestPath(pair<int, int> src, pair<int, int> dest, vector<vector<vector<Node>>> &graph){
+void getShortestPath(vector<vector<Node>> &graph, int source, int destination, map<int, pair<int, int>> &node_map_rev){
+    // dijkstra's algorithm
     bool reachable = false;
-    // use dijkstra's algorithm to find the shortest path
-    // use Node.delay.first as the metric to find the shortest path
-    priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> pq;
-    pq.push({0, src}); // distance, node
-    vector<vector<bool>> all_used(graph.size(), vector<bool>(4, false));
-    vector<vector<int> > dist(graph.size(), vector<int>(4, INT_MAX));
-    dist[src.first][src.second] = 0;
-    vector<vector<pair<int, int>>> prev(graph.size(), vector<pair<int, int>>(4, {-1, -1}));
+    vector<int> dist(graph.size(), INT_MAX);
+    vector<int> prev(graph.size(), -1);
+    vector<bool> visited(graph.size(), false);
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+    dist[source] = 0;
+    pq.push({0, source});
     while(!pq.empty()){
-        pair<int, pair<int, int>> curr = pq.top(); // distance, node(x, y)
+        int u = pq.top().second;
         pq.pop();
-        if(all_used[curr.second.first][curr.second.second]){
-            continue;
+        if(u == destination){
+            reachable = true;
+            break;
         }
-        all_used[curr.second.first][curr.second.second] = true;
-        if(curr.second.first == dest.first && curr.second.second == dest.second){
-             reachable = true;
-             break;
-        }
-        for(auto &nextNode: graph[curr.second.first][curr.second.second]){
-            if(!all_used[nextNode.node.first][nextNode.node.second] && nextNode.delay.second != 0){
-                // cout << "Next node: " << nextNode.node.first << " " << nextNode.node.second << endl;
-                int newDist = curr.first + nextNode.delay.first;
-                if(newDist < dist[nextNode.node.first][nextNode.node.second]){
-                    dist[nextNode.node.first][nextNode.node.second] = newDist;
-                    prev[nextNode.node.first][nextNode.node.second] = curr.second;
-                    pq.push({-newDist, nextNode.node});
-                    // cout << "Prev # Traces: " << nextNode.delay.second << endl;
-                    nextNode.delay.second--;
-                    // cout << "Remaining #Traces: " << nextNode.delay.second << endl;
-                }
+        if(visited[u]) continue;
+        visited[u] = true;
+        for(int i = 0; i < (int)graph[u].size(); i++){
+            int v = graph[u][i].node;
+            int w = graph[u][i].delay;
+            int &t = graph[u][i].traces;
+            if(dist[v] > dist[u] + w && t > 0){
+                dist[v] = dist[u] + w;
+                prev[v] = u;
+                pq.push({dist[v], v});
             }
         }
     }
-    // print the path
     if(reachable){
-        int curr_x = dest.first;
-        int curr_y = dest.second;
-        stack<pair<int, int>> path;
-        // path.push({curr_x, curr_y});
-        while(curr_x != src.first || curr_y != src.second){
-            // cout << "(" << curr_x << "," << curr_y << ") ";
-            path.push({curr_x, curr_y});
-            curr_x = prev[curr_x][curr_y].first;
-            curr_y = prev[curr_x][curr_y].second;
+        stack<int> path;
+        int u = destination;
+        while(u != -1){
+            path.push(u);
+            u = prev[u];
         }
-        path.push({curr_x, curr_y});
-        while(path.size() != 0){
-            pair<int, int> curr = path.top();
+        // path.push(source);
+        // while(!path.empty()){
+        //     cout << node_map_rev[path.top()].first << "," << node_map_rev[path.top()].second << " ";
+        //     path.pop();
+        // }
+        u = path.top();
+        path.pop();
+        while(!path.empty()){
+            // get first two nodes
+            cout << node_map_rev[u].first << "," << node_map_rev[u].second << " ";
+            int v = path.top();
             path.pop();
-            cout << curr.second << "," << curr.first << " ";
+           // check if the two nodes are in the same row
+            if(node_map_rev[u].first == node_map_rev[v].first){
+                // if yes, then the path is horizontal
+                // reduce the traces by one if the nbr is horizontal
+                for(auto &nbr: graph[u]){
+                    if(node_map_rev[u].first == node_map_rev[nbr.node].first){ // horizontal nbrs
+                        nbr.traces--;
+                    }
+                }
+            }
+            else{
+                // if no, then the path is vertical
+                // reduce the traces by one if the nbr is vertical
+                for(auto &nbr: graph[u]){
+                    if(node_map_rev[u].second == node_map_rev[nbr.node].second){ // vertical nbrs
+                        nbr.traces--;
+                    }
+                }
+            }
+            u = v;
         }
-        // cout << "(" << curr_x << "," << curr_y << ") ";
-        // break;
-    }else{
-        cout << "NC" << endl;
+        cout << node_map_rev[u].first << "," << node_map_rev[u].second << endl;
     }
-}
+    else cout << "NC" << endl;
 
+}
 int main(){
     // get M rows and N columns
     int M, N; // m corresponds to y and n corresponds to x in the form of (x, y)
@@ -89,8 +102,24 @@ int main(){
             cin >> vt[i][j];
         }
     }
+    // coordinates to node mapping
+    int node = 0;
+    map<pair<int, int>, int> node_map;
+    map<int, pair<int, int>> node_map_rev;
+    for (int m = 0; m < M; m++) {
+        for (int n = 0; n < N; n++) {
+            node_map[{n, m}] = node;
+            node_map_rev[node] = {n, m};
+            node++;
+        }
+    }
+    // cout << "Node map: " << endl;
+    // for (auto it = node_map.begin(); it != node_map.end(); it++) {
+    //     cout << it->first.first << "," << it->first.second << " " << it->second << endl;
+    // }
+    // cout << "Generating graph..." << endl;
     // generate a graph of size M x N nodes: each node is a pair of (x, y) coordinates
-    vector<vector<vector<Node>>> graph(M, vector<vector<Node>>(N, vector<Node>()));
+    vector<vector<Node>> graph(M*N, vector<Node>(4));
     for(int m=0; m<M; m++){ 
         for(int n=0; n<N; n++){// itertae over x direction first
             // parent node is the node itself
@@ -109,7 +138,7 @@ int main(){
             for(auto neighbour : neighbours){
                 // cout << "neighbour: " << neighbour.first << " " << neighbour.second << endl;
                 Node temp_node;
-                temp_node.node = neighbour;
+                temp_node.node = node_map[neighbour];
                 int delay;
                 int traces;
                 if(neighbour.second == m){ // neighbour is in the same row
@@ -130,8 +159,13 @@ int main(){
                     // cout << "delay: " << delay << endl;
                 }
                 // cout << "Delaay: " << delay << "Traces: " << traces << endl;
-                temp_node.delay = make_pair(delay, traces);
-                graph[n][m].push_back(temp_node);
+                temp_node.delay = delay;
+                temp_node.traces = traces;
+                // cout << "Creating the node..." << endl;
+                // cout << "Parent Coo: " << parent.first << " " << parent.second << endl;
+                // cout << "Parent Ind: " << node_map[parent] << endl;
+                graph[node_map[parent]].push_back(temp_node);
+                // cout << "Node created." << endl;
             }
         }
     }
@@ -158,7 +192,7 @@ int main(){
         pair<int, int> dest = {stoi(end.substr(0, end.find(','))), stoi(end.substr(end.find(',') + 1))};
         // cout << "Start: " << start_point.first << "," << start_point.second << endl;
         // cout << "End: " << end_point.first << "," << end_point.second << endl;
-        getShortestPath(src, dest, graph);
+        getShortestPath(graph, node_map[src], node_map[dest], node_map_rev);
     }
 }
 
