@@ -21,7 +21,7 @@ int main(){
     //     t+=i*i;
     // }
     // cout << t << endl;
-    pair<int, int> p = {0,0};
-    pair<int, int> p1 = {1,0};
-    cout << p==p1 << endl;
+    string name = "111000";
+    cout << name.length() << endl;
+    cout << count(name.begin(), name.begin()+2, '1') << endl;
 }

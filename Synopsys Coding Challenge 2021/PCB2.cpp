@@ -31,7 +31,7 @@ void getShortestPath(vector<vector<Node>> &graph, int source, int destination, m
             int &t = graph[u][i].traces;
             if(dist[v] > dist[u] + w && t > 0){
                 dist[v] = dist[u] + w;
-                prev[v] = u;
+              prev[v] = u;
                 pq.push({dist[v], v});
             }
         }

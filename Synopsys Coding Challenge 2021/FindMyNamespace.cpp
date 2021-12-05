@@ -32,17 +32,57 @@ The prefix of the name has the property where NumberOf(‘1’) ≥ NumberOf(‘
 Output Format
 
 5
-*/
+// */
+// #include <bits/stdc++.h>
+// using namespace std;
+
+// // nCr using dynamic programming
+// int nCr(int n, int r)
+// {
+//     int C[n + 1][r + 1];
+//     for (int i = 0; i <= n; i++)
+//     {
+//         for (int j = 0; j <= min(i, r); j++)
+//         {
+//             if (j == 0 || j == i)
+//                 C[i][j] = 1;
+//             else
+//                 C[i][j] = C[i - 1][j - 1] + C[i - 1][j];
+//         }
+//     }
+//     return C[n][r];
+// }
+
+// int main(){
+//     int n;
+//     cin >> n;
+//     int max_ones = n;// first digit is always 1
+//     int min_ones = 0;
+//     if(n%2 == 0) min_ones = n/2;
+//     else min_ones = (n+1)/2;
+//     // number of different prefixes
+//     int ans =0;
+//     // first digit is always 1 and last digit is always 0
+//     max_ones = max_ones - 1;
+//     min_ones = min_ones - 1;
+//     for(int i=min_ones;i<=max_ones;i++){
+//         // for each prefix, number of valid names
+//         int num_zeros_in_suffix = i; // number of zeros in suffix equals to number of ones in prefix
+//         ans+=nCr(n-1,i)*nCr(n-1,num_zeros_in_suffix);
+//     }
+//     cout << ans << endl;
+// }
+
 #include <bits/stdc++.h>
 using namespace std;
 
 // nCr using dynamic programming
-int nCr(int n, int r)
+int nCr(long int n, long int r)
 {
-    int C[n + 1][r + 1];
-    for (int i = 0; i <= n; i++)
+    long int C[n + 1][r + 1];
+    for (long int i = 0; i <= n; i++)
     {
-        for (int j = 0; j <= min(i, r); j++)
+        for (long int j = 0; j <= min(i, r); j++)
         {
             if (j == 0 || j == i)
                 C[i][j] = 1;
@@ -54,19 +94,21 @@ int nCr(int n, int r)
 }
 
 int main(){
-    int n;
+    long int n;
     cin >> n;
-    int max_ones = n;
-    int min_ones = 0;
+    long int max_ones = n;// first digit is always 1
+    long int min_ones = 0;
     if(n%2 == 0) min_ones = n/2;
     else min_ones = (n+1)/2;
     // number of different prefixes
-    int ans =0;
-    for(int i=min_ones;i<=max_ones;i++){
+    long int ans =0;
+    // first digit is always 1 and last digit is always 0
+    max_ones = max_ones - 1;
+    min_ones = min_ones - 1;
+    for(long int i=min_ones;i<=max_ones;i++){
         // for each prefix, number of valid names
-        int num_zeros_in_suffix = i; // number of zeros in suffix equals to number of ones in prefix
-        ans+=nCr(n,i)*nCr(n,num_zeros_in_suffix);
-
+        long int num_zeros_in_suffix = i; // number of zeros in suffix equals to number of ones in prefix
+        ans+=nCr(n-1,i)*nCr(n-1,num_zeros_in_suffix);
     }
     cout << ans << endl;
 }
